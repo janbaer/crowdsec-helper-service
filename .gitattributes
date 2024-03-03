@@ -1,0 +1,8 @@
+# Set default behavior to automatically normalize line endings
+* text=auto
+
+# Go source files
+*.go text
+
+# Ignore vendor directory
+vendor/ binary
