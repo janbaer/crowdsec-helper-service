@@ -43,7 +43,7 @@ func main() {
 
 func sendResponse(w http.ResponseWriter, statusCode int, body string) {
 	w.WriteHeader(statusCode)
-	w.Write([]byte(body))
+	w.Write([]byte(fmt.Sprintf("%s\n", body)))
 }
 
 func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
@@ -64,12 +64,12 @@ func handleDeleteCrowdsecDecison(w http.ResponseWriter, r *http.Request) {
 	ipAddress := queryParams.Get("ip")
 	if net.ParseIP(ipAddress) == nil {
 		logger.Error("The provided IP address is not valid", "ipAddress", ipAddress)
-		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid\n")
+		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid")
 		return
 	}
 
 	if err := csclirunner.DeleteDecision(ipAddress); err != nil {
-		sendResponse(w, http.StatusInternalServerError, "Deletion of the decision failed\n")
+		sendResponse(w, http.StatusInternalServerError, "Deletion of the decision failed")
 		return
 	}
 
@@ -84,24 +84,24 @@ func handlePostCrowdsecDecison(w http.ResponseWriter, r *http.Request) {
 
 	if net.ParseIP(ipAddress) == nil {
 		logger.Error("The provided IP address is not valid", "ipAddress", ipAddress)
-		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid\n")
+		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid")
 		return
 	}
 
 	if decisonType != "ban" && decisonType != "captcha" {
 		logger.Error("The provided decision type is not valid", "type", decisonType)
-		sendResponse(w, http.StatusBadRequest, "The provided decision type is not valid\n")
+		sendResponse(w, http.StatusBadRequest, "The provided decision type is not valid")
 		return
 	}
 
 	if len(duration) == 0 {
 		logger.Error("The provided duration is not valid", "duration", duration)
-		sendResponse(w, http.StatusBadRequest, "The provided duration is not valid\n")
+		sendResponse(w, http.StatusBadRequest, "The provided duration is not valid")
 		return
 	}
 
 	if err := csclirunner.CreateDecision(ipAddress, decisonType, duration); err != nil {
-		sendResponse(w, http.StatusInternalServerError, "Creation of a new decision failed\n")
+		sendResponse(w, http.StatusInternalServerError, "Creation of a new decision failed")
 		return
 	}
 
