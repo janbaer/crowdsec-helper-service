@@ -17,7 +17,7 @@ func init() {
 
 func DeleteDecision(ipAddress string) error {
 	logger.Info("Deleting decision for IP", "ipAddress", ipAddress)
-	return executeCommand("decisions", "delete", "i="+ipAddress)
+	return executeCommand("decisions", "delete", "--ip="+ipAddress)
 }
 
 func CreateDecision(ipAddress string, decisionType string, duration string) error {
@@ -30,9 +30,9 @@ func CreateDecision(ipAddress string, decisionType string, duration string) erro
 	return executeCommand(
 		"decisions",
 		"add",
-		"i="+ipAddress,
-		"type="+decisionType,
-		"duration="+duration,
+		"--ip="+ipAddress,
+		"--type="+decisionType,
+		"--duration="+duration,
 	)
 }
 
@@ -40,7 +40,7 @@ func executeCommand(command string, subCommand string, args ...string) error {
 	execArgs := append([]string{command, subCommand}, args...)
 	cmd := exec.Command(CSLI_BINARY_PATH, execArgs...)
 	if err := cmd.Run(); err != nil {
-		logger.Error("Error running cscli with args", "args", args, "err", err)
+		logger.Error("Error running cscli with args", "args", execArgs, "err", err)
 		return err
 	}
 	logger.Info("Executed command with args", "binary", CSLI_BINARY_PATH, "args", execArgs)

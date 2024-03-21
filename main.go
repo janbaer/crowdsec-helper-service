@@ -64,12 +64,12 @@ func handleDeleteCrowdsecDecison(w http.ResponseWriter, r *http.Request) {
 	ipAddress := queryParams.Get("ip")
 	if net.ParseIP(ipAddress) == nil {
 		logger.Error("The provided IP address is not valid", "ipAddress", ipAddress)
-		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid")
+		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid\n")
 		return
 	}
 
 	if err := csclirunner.DeleteDecision(ipAddress); err != nil {
-		sendResponse(w, http.StatusInternalServerError, "Deletion of the decision failed")
+		sendResponse(w, http.StatusInternalServerError, "Deletion of the decision failed\n")
 		return
 	}
 
@@ -84,24 +84,24 @@ func handlePostCrowdsecDecison(w http.ResponseWriter, r *http.Request) {
 
 	if net.ParseIP(ipAddress) == nil {
 		logger.Error("The provided IP address is not valid", "ipAddress", ipAddress)
-		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid")
+		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid\n")
 		return
 	}
 
 	if decisonType != "ban" && decisonType != "captcha" {
 		logger.Error("The provided decision type is not valid", "type", decisonType)
-		sendResponse(w, http.StatusBadRequest, "The provided decision type is not valid")
+		sendResponse(w, http.StatusBadRequest, "The provided decision type is not valid\n")
 		return
 	}
 
 	if len(duration) == 0 {
 		logger.Error("The provided duration is not valid", "duration", duration)
-		sendResponse(w, http.StatusBadRequest, "The provided duration is not valid")
+		sendResponse(w, http.StatusBadRequest, "The provided duration is not valid\n")
 		return
 	}
 
 	if err := csclirunner.CreateDecision(ipAddress, decisonType, duration); err != nil {
-		sendResponse(w, http.StatusInternalServerError, "Creation of a new decision failed")
+		sendResponse(w, http.StatusInternalServerError, "Creation of a new decision failed\n")
 		return
 	}
 
