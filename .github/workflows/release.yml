@@ -21,7 +21,7 @@ jobs:
           go-version: '>=1.22'
 
       - name: Build application
-        run: make build VERSION=${{ env.APP_VERSION }}
+        run: CGO_ENABLED=0 make build VERSION=${{ env.APP_VERSION }}
 
       - name: Pack binary
         run: tar -czvf ${{ env.APP_NAME }}-${{ env.APP_VERSION }}.tar.gz ./bin/${{ env.APP_NAME }}
