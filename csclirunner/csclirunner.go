@@ -6,18 +6,17 @@ import (
 	"os/exec"
 )
 
-// const CSLI_BINARY_PATH = "/usr/bin/cscli"
-const CSLI_BINARY_PATH = "echo"
+const CSLI_BINARY_PATH = "/usr/bin/cscli"
 
 var logger *slog.Logger
 
 func init() {
-	logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	// logger = slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	logger = slog.New(slog.NewTextHandler(os.Stdout, nil))
 }
 
 func DeleteDecision(ipAddress string) error {
-	// logger.Info("Deleting decision for IP", "ipAddress", ipAddress)
-	// command = "/usr/bin/cscli decisions delete -i="..query.ip
+	logger.Info("Deleting decision for IP", "ipAddress", ipAddress)
 	return executeCommand("decisions", "delete", "i="+ipAddress)
 }
 

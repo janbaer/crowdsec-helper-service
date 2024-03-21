@@ -11,4 +11,3 @@ build:
 
 test:
 	go test ./...
-

@@ -34,7 +34,8 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /crowdsec-helper-service/healthcheck", handleHealthCheck)
-	mux.HandleFunc("DELETE /crowdsec-helper-service/crowdsec/decisions", handleDeleteCrowdsecDecison)
+	mux.HandleFunc("DELETE /crowdsec-helper-service/decisions", handleDeleteCrowdsecDecison)
+	mux.HandleFunc("POST /crowdsec-helper-service/decisions", handlePostCrowdsecDecison)
 
 	logger.Info("Listening on localhost ", "port", port)
 	http.ListenAndServe(fmt.Sprintf("localhost:%d", port), mux)
@@ -60,18 +61,51 @@ func handleHealthCheck(w http.ResponseWriter, r *http.Request) {
 
 func handleDeleteCrowdsecDecison(w http.ResponseWriter, r *http.Request) {
 	queryParams := r.URL.Query()
-	ipAddres := queryParams.Get("ip")
-	if net.ParseIP(ipAddres) == nil {
+	ipAddress := queryParams.Get("ip")
+	if net.ParseIP(ipAddress) == nil {
+		logger.Error("The provided IP address is not valid", "ipAddress", ipAddress)
 		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid")
 		return
 	}
 
-	if err := csclirunner.DeleteDecision(ipAddres); err != nil {
-		sendResponse(w, http.StatusInternalServerError, err.Error())
+	if err := csclirunner.DeleteDecision(ipAddress); err != nil {
+		sendResponse(w, http.StatusInternalServerError, "Deletion of the decision failed")
 		return
 	}
 
 	sendResponse(w, http.StatusOK, "OK")
+}
+
+func handlePostCrowdsecDecison(w http.ResponseWriter, r *http.Request) {
+	queryParams := r.URL.Query()
+	ipAddress := queryParams.Get("ip")
+	decisonType := queryParams.Get("type")
+	duration := queryParams.Get("duration")
+
+	if net.ParseIP(ipAddress) == nil {
+		logger.Error("The provided IP address is not valid", "ipAddress", ipAddress)
+		sendResponse(w, http.StatusBadRequest, "The provided IP address is not valid")
+		return
+	}
+
+	if decisonType != "ban" && decisonType != "captcha" {
+		logger.Error("The provided decision type is not valid", "type", decisonType)
+		sendResponse(w, http.StatusBadRequest, "The provided decision type is not valid")
+		return
+	}
+
+	if len(duration) == 0 {
+		logger.Error("The provided duration is not valid", "duration", duration)
+		sendResponse(w, http.StatusBadRequest, "The provided duration is not valid")
+		return
+	}
+
+	if err := csclirunner.CreateDecision(ipAddress, decisonType, duration); err != nil {
+		sendResponse(w, http.StatusInternalServerError, "Creation of a new decision failed")
+		return
+	}
+
+	sendResponse(w, http.StatusCreated, "Created")
 }
 
 func getFromEnv(value, defaultValue string) string {
