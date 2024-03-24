@@ -33,9 +33,9 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /crowdsec-helper-service/healthcheck", handleHealthCheck)
-	mux.HandleFunc("DELETE /crowdsec-helper-service/decisions", handleDeleteCrowdsecDecison)
-	mux.HandleFunc("POST /crowdsec-helper-service/decisions", handlePostCrowdsecDecison)
+	mux.HandleFunc("GET /crowdsec/healthcheck", handleHealthCheck)
+	mux.HandleFunc("DELETE /crowdsec/decisions", handleDeleteCrowdsecDecison)
+	mux.HandleFunc("POST /crowdsec/decisions", handlePostCrowdsecDecison)
 
 	logger.Info("Listening on localhost ", "port", port)
 	http.ListenAndServe(fmt.Sprintf("localhost:%d", port), mux)

@@ -7,7 +7,7 @@ run:
 	gow run main.go
 
 build:
-	go build -ldflags "-X main.version=$(VERSION)" -o ./bin/crowdsec-helper-service
+	CGO_ENABLED=0 go build -ldflags "-X main.version=$(VERSION)" -o ./bin/crowdsec-helper-service
 
 test:
 	go test ./...
